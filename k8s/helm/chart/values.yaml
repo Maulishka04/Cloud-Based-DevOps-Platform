@@ -1,0 +1,16 @@
+replicaCount: 1
+image:
+  repository: REPLACE_WITH_ECR_REPO
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}
+
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 50

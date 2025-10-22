@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "clouddevopshub.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "clouddevopshub.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "clouddevopshub.name" . }}
+    spec:
+      containers:
+        - name: {{ include "clouddevopshub.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" }}"
+          ports:
+            - containerPort: 80
+          resources: {{ toYaml .Values.resources | nindent 10 }}

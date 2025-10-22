@@ -1,0 +1,37 @@
+name: CD-Prod
+on:
+  workflow_dispatch:
+
+jobs:
+  approval:
+    runs-on: ubuntu-latest
+    outputs:
+      approved: ${{ steps.approve.outputs.approved }}
+    steps:
+      - name: Request approval
+        id: approve
+        uses: hmarr/auto-approve-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-prod:
+    needs: approval
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Run blue-green deploy (placeholder)
+        run: |
+          echo "Run helm upgrade with new release (green), wait for health checks, switch service selector to green, then remove blue"
+          # Example steps:
+          # helm upgrade --install users-green ./k8s/charts/users-service -f k8s/charts/users-service/values.yaml --set image.tag=newtag
+          # wait for health checks
+          # kubectl patch svc users-service -p '{"spec":{"selector":{"track":"green"}}}'
+          # run post-deploy smoke tests
+          # if failures: rollback by switching selector back to blue

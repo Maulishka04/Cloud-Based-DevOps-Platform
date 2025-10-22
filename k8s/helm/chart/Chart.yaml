@@ -1,0 +1,4 @@
+apiVersion: v2
+name: clouddevopshub
+version: 0.1.0
+description: Helm chart for CloudDevOpsHub microservices

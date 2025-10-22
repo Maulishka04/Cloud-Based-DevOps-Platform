@@ -1,0 +1,19 @@
+{
+  "include": [
+    "app",
+    "ml",
+    "tests"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__"
+  ],
+  "pythonVersion": "3.10",
+  "pythonPlatform": "All",
+  "extraPaths": [
+    "."
+  ],
+  "typeCheckingMode": "basic",
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false
+}

@@ -1,0 +1,19 @@
+name: CD-Dev
+on:
+  push:
+    branches: [ 'main' ]
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
+      - name: Build and push images
+        run: echo "Build & push to ECR steps go here"
+      - name: Deploy to EKS
+        run: echo "kubectl/helm deploy steps here"

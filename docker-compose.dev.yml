@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: clouddevopshub
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  users-service:
+    build: ./services/users
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgres://dev:dev@postgres:5432/clouddevopshub
+      MONGO_URL: mongodb://mongo:27017
+      NODE_ENV: development
+    depends_on:
+      - postgres
+      - mongo
+
+  ml-service:
+    build: ./services/ml-service
+    ports:
+      - "8001:8000"
+    environment:
+      MODEL_DIR: /models
+    volumes:
+      - ./services/ml-service/models:/models
+
+volumes:
+  pgdata:
+  mongodata:

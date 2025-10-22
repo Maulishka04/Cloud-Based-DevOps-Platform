@@ -1,0 +1,23 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies (users)
+        run: |
+          cd services/users && npm ci
+      - name: Run tests
+        run: |
+          cd services/users && npm test
+      - name: Build frontend
+        run: |
+          cd frontend && npm ci && npm run build
+      - name: Security scan (example)
+        run: echo "Run dependency scanning (Snyk or similar) here"
