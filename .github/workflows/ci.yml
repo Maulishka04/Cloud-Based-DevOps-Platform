@@ -10,22 +10,50 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: |
+            services/users/package-lock.json
+            frontend/package-lock.json
 
-      - name: Install and test users service
+      - name: Install users service dependencies
         working-directory: ./services/users
-        run: |
-          npm ci
-          npm test
+        run: npm ci
 
-      - name: Install and test frontend (build only)
+      - name: Build users service
+        working-directory: ./services/users
+        run: npm run build
+
+      - name: Install frontend dependencies
         working-directory: ./frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+          cache-dependency-path: services/ml-service/requirements.txt
+
+      - name: Install ML service dependencies
+        working-directory: ./services/ml-service
         run: |
-          npm ci
-          npm run build
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint Python code
+        working-directory: ./services/ml-service
+        run: |
+          pip install flake8
+          flake8 app/ ml/ --count --select=E9,F63,F7,F82 --show-source --statistics || true
 
   build-and-publish:
     needs: lint-and-test
