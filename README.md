@@ -5,6 +5,7 @@
 ### *Enterprise-Grade Cloud-Native DevOps Platform*
 
 [![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/Maulishka04/Cloud-Based-DevOps-Platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Maulishka04/Cloud-Based-DevOps-Platform/actions/workflows/ci.yml)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue.svg)](https://www.typescriptlang.org/)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
