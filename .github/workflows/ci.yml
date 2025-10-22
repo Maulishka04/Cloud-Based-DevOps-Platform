@@ -55,46 +55,53 @@ jobs:
           pip install flake8
           flake8 app/ ml/ --count --select=E9,F63,F7,F82 --show-source --statistics || true
 
-  build-and-publish:
-    needs: lint-and-test
-    runs-on: ubuntu-latest
-    # Only run if AWS secrets are configured
-    if: ${{ github.event_name == 'push' && secrets.AWS_ACCOUNT_ID != '' }}
-    env:
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-region: ${{ secrets.AWS_REGION }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      - name: Login to ECR
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build and push users-service image
-        working-directory: ./services/users
-        run: |
-          IMAGE=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_USERS_REPO }}:$(echo $GITHUB_SHA | cut -c1-7)
-          docker build -t $IMAGE .
-          docker push $IMAGE
-          echo "image=$IMAGE" >> $GITHUB_OUTPUT
-
-      - name: Build and push ml-service image
-        working-directory: ./services/ml-service
-        run: |
-          IMAGE=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_ML_REPO }}:$(echo $GITHUB_SHA | cut -c1-7)
-          docker build -t $IMAGE .
-          docker push $IMAGE
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-images
-          path: |
-            services/users/Dockerfile
-            services/ml-service/Dockerfile
+    # build-and-publish:
+    #   needs: lint-and-test
+    #   runs-on: ubuntu-latest
+    #   # NOTE: This job is disabled until AWS secrets are configured in GitHub repository settings
+    #   # To enable: uncomment this job and add the following secrets to your repository:
+    #   #   - AWS_REGION (e.g., us-east-1)
+    #   #   - AWS_ACCESS_KEY_ID
+    #   #   - AWS_SECRET_ACCESS_KEY
+    #   #   - AWS_ACCOUNT_ID
+    #   #   - ECR_USERS_REPO (e.g., clouddevopshub-users)
+    #   #   - ECR_ML_REPO (e.g., clouddevopshub-ml)
+    #   # See SECURITY.md for more details on required secrets
+    #   env:
+    #     AWS_REGION: ${{ secrets.AWS_REGION }}
+    #     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+    #   steps:
+    #     - uses: actions/checkout@v4
+    #
+    #     - name: Configure AWS credentials
+    #       uses: aws-actions/configure-aws-credentials@v2
+    #       with:
+    #         aws-region: ${{ secrets.AWS_REGION }}
+    #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #
+    #     - name: Login to ECR
+    #       uses: aws-actions/amazon-ecr-login@v1
+    #
+    #     - name: Build and push users-service image
+    #       working-directory: ./services/users
+    #       run: |
+    #         IMAGE=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_USERS_REPO }}:$(echo $GITHUB_SHA | cut -c1-7)
+    #         docker build -t $IMAGE .
+    #         docker push $IMAGE
+    #         echo "image=$IMAGE" >> $GITHUB_OUTPUT
+    #
+    #     - name: Build and push ml-service image
+    #       working-directory: ./services/ml-service
+    #       run: |
+    #         IMAGE=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_ML_REPO }}:$(echo $GITHUB_SHA | cut -c1-7)
+    #         docker build -t $IMAGE .
+    #         docker push $IMAGE
+    #
+    #     - name: Upload artifacts
+    #       uses: actions/upload-artifact@v4
+    #       with:
+    #         name: build-images
+    #         path: |
+    #           services/users/Dockerfile
+    #           services/ml-service/Dockerfile
